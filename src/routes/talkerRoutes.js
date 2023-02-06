@@ -6,6 +6,13 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const dirPath = path.resolve(__dirname, '../talker.json');
+
+const auth = require('../middlewares/auth');
+const validateName = require('../middlewares/validateNome');
+const validateIdade = require('../middlewares/validateIdade');
+const validateWatchedAt = require('../middlewares/validateWatchedAt');
+const validateTalk = require('../middlewares/validateTalk');
+const validateRate = require('../middlewares/validateRate');
  
   const readFile = async () => {
     const data = await fs.readFile(dirPath);
@@ -27,5 +34,30 @@ talkerRouter.get('/:id', async (req, res) => {
     }
     return res.status(200).json(talkerList); 
  });
+
+ talkerRouter.post('/', 
+ auth, 
+ validateName,
+ validateIdade,
+ validateTalk,
+ validateWatchedAt,
+ validateRate,
+
+ async (req, res) => {
+    const { name, age, talk: { watchedAt, rate } } = req.body;
+    const users = await readFile();
+    const newUser = {
+        age, 
+        id: users[users.length - 1].id + 1,
+        name, 
+      talk: {
+        rate,
+      watchedAt,
+      },
+    };
+    const toString = JSON.stringify([...users, newUser]); 
+     await fs.writeFile(dirPath, toString);
+     return res.status(201).json(newUser); 
+  });
 
 module.exports = talkerRouter;
