@@ -60,4 +60,31 @@ talkerRouter.get('/:id', async (req, res) => {
      return res.status(201).json(newUser); 
   });
 
+  talkerRouter.put('/:id', 
+  auth, 
+  validateName,
+  validateIdade,
+  validateTalk,
+  validateWatchedAt,
+  validateRate,
+  async (req, res) => {
+     const { name, age, talk: { watchedAt, rate } } = req.body;
+     const { id } = req.params;
+     const users = await readFile();
+     const newUser = {
+      age, 
+      id: Number(id),
+      name, 
+      talk: {
+      rate,
+      watchedAt,
+       },
+     };
+     const index = users.findIndex((element) => element.id === Number(id));
+     users[index] = newUser;
+     const toString = JSON.stringify(users); 
+     await fs.writeFile(dirPath, toString);
+     return res.status(200).json(newUser); 
+   });
+
 module.exports = talkerRouter;
