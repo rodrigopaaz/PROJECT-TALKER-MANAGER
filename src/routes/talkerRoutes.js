@@ -87,4 +87,15 @@ talkerRouter.get('/:id', async (req, res) => {
      return res.status(200).json(newUser); 
    });
 
+   talkerRouter.delete('/:id', 
+ auth, 
+  async (req, res) => {
+    const users = await readFile();
+    const { id } = req.params;
+    const removeById = users.filter((e) => e.id !== Number(id));
+    const toString = JSON.stringify(removeById); 
+     await fs.writeFile(dirPath, toString);
+     return res.status(204).json('Removed'); 
+  });
+
 module.exports = talkerRouter;
