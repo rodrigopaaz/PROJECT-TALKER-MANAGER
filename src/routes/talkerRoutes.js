@@ -19,6 +19,13 @@ const validateRate = require('../middlewares/validateRate');
     return JSON.parse(data);
 };
 
+talkerRouter.get('/search', auth, async (req, res) => {
+    const { q } = req.query;
+    const data = await readFile(); 
+    const filteredData = data.filter(({ name }) => name.includes(q)); 
+    return res.status(200).json(filteredData); 
+ });
+
 talkerRouter.get('/', async (_req, res) => {
    const data = await readFile(); 
    const talkerList = data; 
